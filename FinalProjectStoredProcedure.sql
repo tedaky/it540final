@@ -439,34 +439,32 @@ GO
 
 
 
-
-
-
--- Check if sp_CreateAuditorium procedure exists
-IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateAuditorium')
+/*
+-- Check if sp_CreateMovieGenre procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateMovieGenre')
 BEGIN
 	-- Procedures in blocks have to be in EXEC
 	EXEC('
-		CREATE PROCEDURE [sp_CreateAuditorium]
+		CREATE PROCEDURE [sp_CreateMovieGenre]
 		AS
 		BEGIN
-			SELECT * FROM [Auditorium];
+			SELECT * FROM [MoviGenre];
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
 END
 ELSE
 BEGIN
-	--RAISERROR('Stored Procedure sp_CreateAuditorium Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateAuditorium Already exists';
+	--RAISERROR('Stored Procedure sp_CreateMovieGenre Already exist', 16, 1);
+	PRINT 'Stored Procedure sp_CreateMovieGenre Already exists';
 END
 GO
 
--- Alter sp_CreateAuditorium to what we want
-ALTER PROCEDURE [sp_CreateAuditorium]
-	-- Param as AuditoriumName, Available_Seats
-	@AuditoriumName VARCHAR(255),
-	@AvailableSeats INT
+-- Alter sp_CreateMovieGenre to what we want
+ALTER PROCEDURE [sp_CreateMovieGenre]
+	-- Param as MovieID, GenreID
+	@MovieID INT,
+	@GenreID INT
 AS
 BEGIN
 	-- Template head start
@@ -485,12 +483,337 @@ BEGIN
 	-- Template head end
 
 		-- Template body start
-		IF NOT EXISTS (SELECT [AuditoriumName] FROM [Auditorium] WHERE [AuditoriumName] = @AuditoriumName)
+		IF NOT EXISTS (SELECT [MovieID] FROM [MovieGenre] WHERE [MovieID] = @MovieID)
 		BEGIN
-			IF @AuditoriumName IS NOT NULL AND @AvailableSeats IS NOT NULL
+			IF @MovieID IS NOT NULL
 			BEGIN
-				INSERT INTO [Auditorium] ([AuditoriumName], [Available_Seats])
-				VALUES (@AuditoriumName, @AvailableSeats);
+				INSERT INTO [MovieGenre] ([MovieID], [GenreID])
+				VALUES (@MovieID, @GenreID);
+			END
+			ELSE
+			BEGIN
+				--RAISERROR('MovieID Should Not Be Null', 16, 1);
+				PRINT 'MovieID Should Not Be Null';
+			END
+		END
+		ELSE
+		BEGIN
+			IF @count > 0		
+			BEGIN
+				--RAISERROR(@MovieID + ' : MovieID Already Exists', 16, 1);
+				PRINT @MovieID + ' : MovieID Already Exists';
+				--ROLLBACK TRANSACTION flag;
+				-- Can commit because no changes
+			END
+			ELSE
+			BEGIN
+				--RAISERROR(@MovieID + ' : MovieID Already Exists', 16, 1);
+				PRINT @MovieID + ' : MovieID Already Exists';
+				--ROLLBACK TRANSACTION;
+				-- Can commit because no changes
+			END
+		END
+		-- Template body end
+
+		-- Template middle start
+		IF @count = 0
+		BEGIN
+			COMMIT TRANSACTION;
+		END
+		-- Template last end
+
+	-- Template last start
+	END
+	END TRY
+	BEGIN CATCH
+	BEGIN
+		IF @count > 0		
+		BEGIN
+			--RAISERROR(@MovieID + ' : MovieID Already Exists', 16, 1);
+			PRINT @MovieID + ' : MovieID Already Exists';
+			ROLLBACK TRANSACTION flag;
+		END
+		ELSE
+		BEGIN
+			--RAISERROR(@MovieID + ' : MovieID Already Exists', 16, 1);
+			PRINT @MovieID + ' : MovieID Already Exists';
+			ROLLBACK TRANSACTION;
+		END
+	END
+	END CATCH
+	-- Template last end
+END
+GO
+
+
+
+
+-- Check if sp_CreateOrder procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateOrder')
+BEGIN
+	-- Procedures in blocks have to be in EXEC
+	EXEC('
+		CREATE PROCEDURE [sp_CreateOrder]
+		AS
+		BEGIN
+			SELECT * FROM [Order];
+		END
+	');
+	-- ^ creates a basic procedure then gets altered
+END
+ELSE
+BEGIN
+	--RAISERROR('Stored Procedure sp_CreateOrder Already exist', 16, 1);
+	PRINT 'Stored Procedure sp_CreateOrder Already exists';
+END
+GO
+
+-- Alter sp_CreateOrder to what we want
+ALTER PROCEDURE [sp_CreateOrder]
+	-- Param as CustomerID, OrderDate
+	@CustomerID INT,
+	@OrderDate Date
+AS
+BEGIN
+	-- Template head start
+	DECLARE @count INT;
+	SET @count = @@TRANCOUNT;
+	IF @count > 0
+	BEGIN
+		SAVE TRANSACTION flag;
+	END
+	ELSE
+	BEGIN
+		BEGIN TRANSACTION;
+	END
+	BEGIN TRY
+	BEGIN
+	-- Template head end
+
+		-- Template body start
+		IF NOT EXISTS (SELECT [CustomerID] FROM [Order] WHERE [CustomerID] = @CustomerID)
+		BEGIN
+			IF @CustomerID IS NOT NULL
+			BEGIN
+				INSERT INTO [Order] ([CustomerID], [OrderDate])
+				VALUES (@CustomerID, @OrderDate);
+			END
+			ELSE
+			BEGIN
+				--RAISERROR('CustomerID Should Not Be Null', 16, 1);
+				PRINT 'CustomerID Should Not Be Null';
+			END
+		END
+		ELSE
+		BEGIN
+			IF @count > 0		
+			BEGIN
+				--RAISERROR(@CustomerID + ' : CustomerID Already Exists', 16, 1);
+				PRINT @CustomerID + ' : CustomerID Already Exists';
+				--ROLLBACK TRANSACTION flag;
+				-- Can commit because no changes
+			END
+			ELSE
+			BEGIN
+				--RAISERROR(@CustomerID + ' : CustomerID Already Exists', 16, 1);
+				PRINT @CustomerID + ' : CustomerID Already Exists';
+				--ROLLBACK TRANSACTION;
+				-- Can commit because no changes
+			END
+		END
+		-- Template body end
+
+		-- Template middle start
+		IF @count = 0
+		BEGIN
+			COMMIT TRANSACTION;
+		END
+		-- Template last end
+
+	-- Template last start
+	END
+	END TRY
+	BEGIN CATCH
+	BEGIN
+		IF @count > 0		
+		BEGIN
+			--RAISERROR(@CustomerID + ' : CustomerID Already Exists', 16, 1);
+			PRINT @CustomerID + ' : CustomerID Already Exists';
+			ROLLBACK TRANSACTION flag;
+		END
+		ELSE
+		BEGIN
+			--RAISERROR(@CustomerID + ' : CustomerID Already Exists', 16, 1);
+			PRINT @CustomerID + ' : CustomerID Already Exists';
+			ROLLBACK TRANSACTION;
+		END
+	END
+	END CATCH
+	-- Template last end
+END
+GO
+
+
+
+
+-- Check if sp_CreateTicket procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateTicket')
+BEGIN
+	-- Procedures in blocks have to be in EXEC
+	EXEC('
+		CREATE PROCEDURE [sp_CreateTicket]
+		AS
+		BEGIN
+			SELECT * FROM [Ticket];
+		END
+	');
+	-- ^ creates a basic procedure then gets altered
+END
+ELSE
+BEGIN
+	--RAISERROR('Stored Procedure sp_CreateTicket Already exist', 16, 1);
+	PRINT 'Stored Procedure sp_CreateTicket Already exists';
+END
+GO
+
+-- Alter sp_CreateTicket to what we want
+ALTER PROCEDURE [sp_CreateTicket]
+	-- Param as CustomerID, OrderDate
+	@ShowingID INT,
+	@CategoryID INT,
+	@Price		MONEY
+AS
+BEGIN
+	-- Template head start
+	DECLARE @count INT;
+	SET @count = @@TRANCOUNT;
+	IF @count > 0
+	BEGIN
+		SAVE TRANSACTION flag;
+	END
+	ELSE
+	BEGIN
+		BEGIN TRANSACTION;
+	END
+	BEGIN TRY
+	BEGIN
+	-- Template head end
+
+		-- Template body start
+		IF NOT EXISTS (SELECT [TicketID] FROM [TICKET] WHERE [ShowingID] = @ShowingID)
+		BEGIN
+			IF @ShowingID IS NOT NULL
+			BEGIN
+				INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
+				VALUES (@ShowingID, @CategoryID, Price);
+			END
+			ELSE
+			BEGIN
+				--RAISERROR('ShowingID Should Not Be Null', 16, 1);
+				PRINT 'ShowingID Should Not Be Null';
+			END
+		END
+		ELSE
+		BEGIN
+			IF @count > 0		
+			BEGIN
+				--RAISERROR(@ShowingID + ' : ShowingID Already Exists', 16, 1);
+				PRINT @ShowingID + ' : ShowingID Already Exists';
+				--ROLLBACK TRANSACTION flag;
+				-- Can commit because no changes
+			END
+			ELSE
+			BEGIN
+				--RAISERROR(@ShowingID + ' : ShowingID Already Exists', 16, 1);
+				PRINT @ShowingID + ' : ShowingID Already Exists';
+				--ROLLBACK TRANSACTION;
+				-- Can commit because no changes
+			END
+		END
+		-- Template body end
+
+		-- Template middle start
+		IF @count = 0
+		BEGIN
+			COMMIT TRANSACTION;
+		END
+		-- Template last end
+
+	-- Template last start
+	END
+	END TRY
+	BEGIN CATCH
+	BEGIN
+		IF @count > 0		
+		BEGIN
+			--RAISERROR(@ShowingID + ' : ShowingID Already Exists', 16, 1);
+			PRINT @ShowingID + ' : ShowingID Already Exists';
+			ROLLBACK TRANSACTION flag;
+		END
+		ELSE
+		BEGIN
+			--RAISERROR(@ShowingID + ' : ShowingID Already Exists', 16, 1);
+			PRINT @ShowingID + ' : ShowingID Already Exists';
+			ROLLBACK TRANSACTION;
+		END
+	END
+	END CATCH
+	-- Template last end
+END
+GO
+*/
+
+-- Check if sp_CreateShowing procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateShowing')
+BEGIN
+	-- Procedures in blocks have to be in EXEC
+	EXEC('
+		CREATE PROCEDURE [sp_CreateShowing]
+		AS
+		BEGIN
+			SELECT * FROM [Showing];
+		END
+	');
+	-- ^ creates a basic procedure then gets altered
+END
+ELSE
+BEGIN
+	--RAISERROR('Stored Procedure sp_CreateShowing Already exist', 16, 1);
+	PRINT 'Stored Procedure sp_CreateShowing Already exists';
+END
+GO
+
+-- Alter sp_CreateShowing to what we want
+ALTER PROCEDURE [sp_CreateShowing]
+	-- Param as MovieID, AuditoriumID, Date, Time
+	@MovieID INT,
+	@AuditoriumID INT,
+	@Date		Date,
+	@Time		Time
+AS
+BEGIN
+	-- Template head start
+	DECLARE @count INT;
+	SET @count = @@TRANCOUNT;
+	IF @count > 0
+	BEGIN
+		SAVE TRANSACTION flag;
+	END
+	ELSE
+	BEGIN
+		BEGIN TRANSACTION;
+	END
+	BEGIN TRY
+	BEGIN
+	-- Template head end
+
+			-- Template body start
+		IF NOT EXISTS (SELECT [MovieID], [AuditoriumID], [Time] FROM [Showing] WHERE [Date] = @Date)
+		BEGIN
+			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
+			BEGIN
+				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
+				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
 			END
 			ELSE
 			BEGIN
@@ -502,16 +825,16 @@ BEGIN
 		BEGIN
 			IF @count > 0		
 			BEGIN
-				--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-				PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+				--RAISERROR('This Showing Already Exists', 16, 1);
+				PRINT 'This Showing Already Exists';
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-				PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
-				--ROLLBACK TRANSACTION flag;
+				--RAISERROR('This Showing Already Exists', 16, 1);
+				PRINT 'This Showing Already Exists';
+				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
 		END
@@ -531,14 +854,14 @@ BEGIN
 	BEGIN
 		IF @count > 0		
 		BEGIN
-			--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-			PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+			--RAISERROR('This Showing Already Exists', 16, 1);
+			PRINT 'This Showing Already Exists';
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-			PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+			--RAISERROR('This Showing Already Exists', 16, 1);
+			PRINT 'This Showing Already Exists';
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -546,232 +869,3 @@ BEGIN
 	-- Template last end
 END
 GO
-
-
-
-
-
-
--- Check if sp_CreateMovie procedure exists
-IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateMovie')
-BEGIN
-	-- Procedures in blocks have to be in EXEC
-	EXEC('
-		CREATE PROCEDURE [sp_CreateMovie]
-		AS
-		BEGIN
-			SELECT * FROM [Movie];
-		END
-	');
-	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateMovie Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateMovie Already exists';
-END
-GO
-
-
--- Check if fn_MoveGenre function exists
-IF NOT EXISTS (
-		SELECT 1
-		FROM [INFORMATION_SCHEMA].[ROUTINES]
-		WHERE [SPECIFIC_SCHEMA] = 'dbo' AND
-		[SPECIFIC_NAME] = 'fn_MoveGenre' AND
-		[ROUTINE_TYPE] = 'FUNCTION'
-	) 
-BEGIN
-	-- Function in blocks have to be in EXEC
-	EXEC('
-		CREATE FUNCTION fn_MoveGenre()
-			RETURNS @table TABLE (
-				[GenreItem] INT
-			)
-		AS
-		BEGIN
-			INSERT INTO @table VALUES(1)
-			RETURN;
-		END
-	')
-END
-ELSE
-BEGIN
-	--RAISERROR('Function fn_MoveGenre Already exist', 16, 1);
-	PRINT 'Function fn_MoveGenre Already exists';
-END
-GO
-GO
-
--- Alter fn_MoveGenre to what we want
-ALTER FUNCTION fn_MoveGenre(@String VARCHAR(255))
-	-- Return genre names as table
-	RETURNS @table TABLE (
-		[GenreItem] VARCHAR(255)
-	)
-AS
-BEGIN
-	DECLARE @Item VARCHAR(255);
-    DECLARE @ItemList VARCHAR(255);
-	DECLARE @DelimIndex INT;
-
-	SET @ItemList = @String;
-	SET @DelimIndex = CHARINDEX(',', @ItemList, 0);
-	WHILE (@DelimIndex != 0)
-	BEGIN
-		SET @Item = SUBSTRING(@ItemList, 0, @DelimIndex);
-		INSERT INTO @table
-		VALUES (@Item);
-
-		SET @ItemList = SUBSTRING(@ItemList, @DelimIndex + 1, LEN(@ItemList) - @DelimIndex);
-		SET @DelimIndex = CHARINDEX(',', @ItemList, 0);
-	END
-
-	IF @Item IS NOT NULL
-	BEGIN
-		SET @Item = @ItemList
-		INSERT INTO @table VALUES (@Item);
-	END
-	ELSE
-	BEGIN
-		INSERT INTO @table VALUES (@String);
-	END
-
-    RETURN;
-END;
-GO
-
--- Alter sp_CreateMovie to what we want
-ALTER PROCEDURE [sp_CreateMovie]
-	-- Param as Title, ReleaseDate, Runtime, RatingID
-	--RatingID will be varchar since a rating name is unique
-	@MovieTitle VARCHAR(255),
-	@MovieReleaseDate DATE,
-	@MovieRuntime TIME,
-	@MovieRating VARCHAR(255),
-	@MovieGenre VARCHAR(255)
-AS
-BEGIN
-	-- Template head start
-	DECLARE @count INT;
-	SET @count = @@TRANCOUNT;
-	IF @count > 0
-	BEGIN
-		SAVE TRANSACTION flag;
-	END
-	ELSE
-	BEGIN
-		BEGIN TRANSACTION;
-	END
-	BEGIN TRY
-	BEGIN
-	-- Template head end
-
-		-- Template body start
-		IF NOT EXISTS (
-				SELECT [m].[Title], [m].[ReleaseDate], [m].[Runtime], [m].[RatingID]
-				FROM [Movie] [m]
-				JOIN [Rating] [r]
-				ON [r].[RatingID] = [m].[RatingID]
-				WHERE [m].[Title] = @MovieTitle AND
-				[m].[ReleaseDate] = @MovieReleaseDate AND
-				[m].[Runtime] = @MovieRuntime AND
-				[r].[RatingName] = @MovieRating
-			)
-		BEGIN
-			IF @MovieTitle IS NOT NULL AND @MovieRating IS NOT NULL
-			BEGIN
-				
-				IF NOT EXISTS (
-						SELECT [g].[GenreName]
-						FROM [Genre] [g]
-						JOIN ( SELECT * from dbo.fn_MoveGenre(@MovieGenre) ) [itb1]
-						ON [itb1].[GenreItem] = [g].[GenreName]
-					)
-				BEGIN
-					PRINT 'Use the appropriate Genre(s)';
-				END
-				ELSE
-				BEGIN
-					DECLARE @GenreTbl TABLE
-                                                 (GenreName VARCHAR(100));
-					insert into @GenreTbl
-					SELECT * from [dbo].[fn_MoveGenre](@MovieGenre);
-
-					DECLARE @RatingID INT
-					SET @RatingID = (
-							SELECT [r].[RatingID]
-							FROM [Rating] [r]
-							WHERE [r].[RatingName] = @MovieRating
-						);
-					INSERT INTO [Movie] ([Title], [ReleaseDate], [Runtime], [RatingID])
-					VALUES (@MovieTitle, @MovieReleaseDate, @MovieRuntime, @RatingID);
-					
-					DECLARE @id INT;
-					SET @id = @@IDENTITY;
-					DECLARE @GenreID INT;
-					WHILE (SELECT COUNT(*) FROM @GenreTbl) > 0
-					BEGIN
-						SELECT @GenreID = GenreID from Genre where GenreName = (SELECT TOP 1 GenreName from @GenreTbl);
-						INSERT INTO [MovieGenre] ([MovieID], [GenreID])
-						VALUES (@id, @GenreID);
-						delete from @GenreTbl
-						where GenreName = (SELECT TOP 1 GenreName from @GenreTbl);
-					END
-				END
-			END
-			ELSE
-			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
-			END
-		END
-		ELSE
-		BEGIN
-			IF @count > 0
-			BEGIN
-				--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-				PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
-				--ROLLBACK TRANSACTION flag;
-				-- Can commit because no changes
-			END
-			ELSE
-			BEGIN
-				--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-				PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
-				--ROLLBACK TRANSACTION flag;
-				-- Can commit because no changes
-			END
-		END
-		-- Template body end
-
-		-- Template middle start
-		IF @count = 0
-		BEGIN
-			COMMIT TRANSACTION;
-		END
-		-- Template last end
-
-	-- Template last start
-	END
-	END TRY
-	BEGIN CATCH
-	BEGIN
-		IF @count > 0		
-		BEGIN
-			--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-			PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
-			ROLLBACK TRANSACTION flag;
-		END
-		ELSE
-		BEGIN
-			--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-			PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
-			ROLLBACK TRANSACTION;
-		END
-	END
-	END CATCH
-	-- Template last end
-END
-GO
-
