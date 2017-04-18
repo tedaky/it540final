@@ -107,7 +107,8 @@ BEGIN
 		-- Primary and Foreign
 		CONSTRAINT [PK_Showing] PRIMARY KEY ([ShowingID]),
 		CONSTRAINT [FK_MovieShowing] FOREIGN KEY ([MovieID]) REFERENCES [Movie]([MovieID]),
-		CONSTRAINT [FK_AuditoriumShowing] FOREIGN KEY ([AuditoriumID]) REFERENCES [Auditorium]([AuditoriumID])
+		CONSTRAINT [FK_AuditoriumShowing] FOREIGN KEY ([AuditoriumID]) REFERENCES [Auditorium]([AuditoriumID]),
+		CONSTRAINT [UN_Showing] UNIQUE ([AuditoriumID], [Date], [Time])
 	);
 END
 GO
