@@ -91,7 +91,7 @@ EXEC [sp_CreateAuditorium] @AuditoriumName = 'Auditorium E', @AvailableSeats = 2
 GO
 
 
--- Insert to Auditorium Table
+-- Insert to Movie Table
 EXEC [sp_CreateMovie] @MovieTitle = 'The Dark Knight', @MovieReleaseDate = '2008-7-18', @MovieRuntime = '2:32:00', @MovieRating = 'PG-13', @MovieGenre = 'Action,Crime,Drama';
 GO
 EXEC [sp_CreateMovie] @MovieTitle = 'Pulp Fiction', @MovieReleaseDate = '1994-10-14', @MovieRuntime = '2:34:00', @MovieRating = 'R', @MovieGenre = 'Crime,Drama';

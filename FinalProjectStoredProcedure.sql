@@ -130,7 +130,7 @@ BEGIN
 END
 GO
 
--- Alter sp_CreateGenre to what we want
+-- Alter sp_CreateCategory to what we want
 ALTER PROCEDURE [sp_CreateCategory]
 	-- Params as Name, Description
 	@CategoryName VARCHAR(255),
@@ -239,7 +239,7 @@ BEGIN
 END
 GO
 
--- Alter sp_CreateGenre to what we want
+-- Alter sp_CreateRating to what we want
 ALTER PROCEDURE [sp_CreateRating]
 	-- Param as RatingName, RatingDescription
 	@RatingName VARCHAR(255),
