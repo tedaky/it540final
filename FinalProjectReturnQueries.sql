@@ -56,4 +56,14 @@ GROUP BY [c].[CategoryID], [c].[Name];
 GO
 
 -- ii.  Return the total sales per movie per year.
-SELECT 
+SELECT [m].[MovieID], [m].[Title], SUM([t].[Price]) AS 'Price_Sum', YEAR([o].[OrderDate]) AS 'Year'
+FROM [Movie] [m]
+JOIN [Showing] [s]
+ON [s].[MovieID] = [m].[MovieID]
+JOIN [Ticket] [t]
+ON [t].[ShowingID] = [s].[ShowingID]
+JOIN [OrderDetail] [od]
+ON [od].[TicketID] = [t].[TicketID]
+JOIN [Order] [o]
+ON [o].[OrderID] = [od].OrderID
+GROUP BY [m].[MovieID], [m].[Title], YEAR([o].[OrderDate]);
