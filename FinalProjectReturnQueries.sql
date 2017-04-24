@@ -13,6 +13,20 @@ WHERE NOT EXISTS (
 );
 GO
 
+-- ii.  Return the total sales per movie per year.
+SELECT [m].[MovieID], [m].[Title], SUM([t].[Price]) AS 'Price_Sum', YEAR([o].[OrderDate]) AS 'Year'
+FROM [Movie] [m]
+JOIN [Showing] [s]
+ON [s].[MovieID] = [m].[MovieID]
+JOIN [Ticket] [t]
+ON [t].[ShowingID] = [s].[ShowingID]
+JOIN [OrderDetail] [od]
+ON [od].[TicketID] = [t].[TicketID]
+JOIN [Order] [o]
+ON [o].[OrderID] = [od].OrderID
+GROUP BY [m].[MovieID], [m].[Title], YEAR([o].[OrderDate]);
+GO
+
 -- v.   Return all the movies that have had sold out showings.
 SELECT [m].[MovieID], [m].[Title]
 FROM [Movie] [m]
@@ -27,6 +41,16 @@ WHERE EXISTS (
 	ON [od].[TicketID] = [t].TicketID
 	WHERE [od].[No_of_Tickets] = [a].[Available_Seats]
 );
+GO
+
+-- vi.  Return per category the number of moviegoers.
+SELECT [c].[CategoryID], [c].[Name], SUM([od].[No_of_Tickets]) AS 'Sum_Of_Tickets'
+FROM [Category] [c]
+JOIN [Ticket] [t]
+ON [t].[CategoryID] = [c].[CategoryID]
+JOIN [OrderDetail] [od]
+ON [od].[TicketID] = [t].[TicketID]
+GROUP BY [c].[CategoryID], [c].[Name];
 GO
 
 -- vii. What’s the average age of the moviegoers per movie.
@@ -44,26 +68,3 @@ JOIN [Movie] [m]
 ON [m].[MovieID] = [s].[MovieID]
 GROUP BY [m].[MovieID], [m].[Title];
 GO
-
--- vi.  Return per category the number of moviegoers.
-SELECT [c].[CategoryID], [c].[Name], SUM([od].[No_of_Tickets]) AS 'Sum_Of_Tickets'
-FROM [Category] [c]
-JOIN [Ticket] [t]
-ON [t].[CategoryID] = [c].[CategoryID]
-JOIN [OrderDetail] [od]
-ON [od].[TicketID] = [t].[TicketID]
-GROUP BY [c].[CategoryID], [c].[Name];
-GO
-
--- ii.  Return the total sales per movie per year.
-SELECT [m].[MovieID], [m].[Title], SUM([t].[Price]) AS 'Price_Sum', YEAR([o].[OrderDate]) AS 'Year'
-FROM [Movie] [m]
-JOIN [Showing] [s]
-ON [s].[MovieID] = [m].[MovieID]
-JOIN [Ticket] [t]
-ON [t].[ShowingID] = [s].[ShowingID]
-JOIN [OrderDetail] [od]
-ON [od].[TicketID] = [t].[TicketID]
-JOIN [Order] [o]
-ON [o].[OrderID] = [od].OrderID
-GROUP BY [m].[MovieID], [m].[Title], YEAR([o].[OrderDate]);
