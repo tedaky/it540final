@@ -824,6 +824,28 @@ BEGIN
 		BEGIN
 			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
 			BEGIN
+			DECLARE @ReleaseDate Date
+			SELECT @ReleaseDate = ReleaseDate
+			FROM Movie
+			WHERE MovieID = @MovieID
+				IF (@ReleaseDate <= @Date)
+				BEGIN
+					INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
+					VALUES (@MovieID, @AuditoriumID, @Date, @Time);
+				END
+				ELSE
+				BEGIN
+					PRINT 'Cannot show movie before it is released';
+				END
+			END
+			ELSE
+			BEGIN
+				--RAISERROR('Values should not be Null', 16, 1);
+				PRINT 'Values Should Not Be Null';
+			END
+			/*
+			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
+			BEGIN
 				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
 				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
 			END
@@ -831,7 +853,7 @@ BEGIN
 			BEGIN
 				--RAISERROR('Values should not be Null', 16, 1);
 				PRINT 'Values Should Not Be Null';
-			END
+			END*/
 		END
 		ELSE
 		BEGIN
@@ -881,3 +903,4 @@ BEGIN
 	-- Template last end
 END
 GO
+
