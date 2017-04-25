@@ -102,3 +102,16 @@ EXEC [sp_CreateMovie] @MovieTitle = 'Forrest Gump', @MovieReleaseDate = '1994-7-
 GO
 EXEC [sp_CreateMovie] @MovieTitle = 'Goodfellas', @MovieReleaseDate = '1990-9-21', @MovieRuntime = '2:26:00', @MovieRating = 'R', @MovieGenre = 'Biography,Crime,Drama';
 GO
+
+
+-- Insert to Showing Table
+EXEC [sp_CreateShowing] @MovieID = 1, @AuditoriumID = 1, @Date = '2009-12-20', @Time = '5:00';
+GO
+EXEC [sp_CreateShowing] @MovieID = 2, @AuditoriumID = 1, @Date = '1999-02-11', @Time = '7:00';
+GO
+EXEC [sp_CreateShowing] @MovieID = 3, @AuditoriumID = 2, @Date = '2002-05-18', @Time = '6:15';
+GO
+EXEC [sp_CreateShowing] @MovieID = 4, @AuditoriumID = 5, @Date = '1997-08-27', @Time = '5:30';
+GO
+EXEC [sp_CreateShowing] @MovieID = 5, @AuditoriumID = 3, @Date = '2013-06-05', @Time = '7:45';
+GO

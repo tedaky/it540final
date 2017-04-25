@@ -903,3 +903,4 @@ BEGIN
 	-- Template last end
 END
 GO
+
