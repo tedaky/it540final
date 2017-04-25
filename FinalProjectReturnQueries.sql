@@ -37,6 +37,18 @@ ON [s].[AuditoriumID] = [a].[AuditoriumID]
 GROUP BY [s].[Date], [m].[MovieID], [m].[Title], [a].[Available_Seats]
 GO
 
+-- iv.	Return the number of tickets sold per year per category.
+SELECT SUM([od].[no_of_tickets]), YEAR([o].[OrderDate]), [c].[Name]
+FROM [OrderDetail] [od]
+JOIN [Order] [o]
+ON [od].[OrderID] = [o].[OrderID]
+JOIN [Ticket] [t]
+ON [od].[TicketID] = [t].[TicketID]
+Join [Category] [c]
+ON [t].[CategoryID] = [c].[CategoryID]
+GROUP BY YEAR([o].[OrderDate]), [c].[Name]
+GO
+
 -- v.   Return all the movies that have had sold out showings.
 SELECT [m].[MovieID], [m].[Title]
 FROM [Movie] [m]
