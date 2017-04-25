@@ -27,6 +27,16 @@ ON [o].[OrderID] = [od].OrderID
 GROUP BY [m].[MovieID], [m].[Title], YEAR([o].[OrderDate]);
 GO
 
+-- iii.	Return the number of available seats for each movie per showing date.
+SELECT [m].[MovieID], [m].[Title], [a].[Available_Seats], [s].[Date]
+from [Showing] [s]
+JOIN [Movie] [m]
+ON [s].[MovieID] = [m].[MovieID]
+JOIN [Auditorium] [a]
+ON [s].[AuditoriumID] = [a].[AuditoriumID]
+GROUP BY [s].[Date], [m].[MovieID], [m].[Title], [a].[Available_Seats]
+GO
+
 -- v.   Return all the movies that have had sold out showings.
 SELECT [m].[MovieID], [m].[Title]
 FROM [Movie] [m]
