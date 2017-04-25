@@ -15,11 +15,6 @@ BEGIN
 	');
 	-- ^ creates a basic procedure then gets altered
 END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateGenre Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateGenre Already exists';
-END
 GO
 
 -- Alter sp_CreateGenre to what we want
@@ -53,23 +48,22 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Genre Name Should Not Be Null', 16, 1);
-				PRINT 'Genre Name Should Not Be Null';
+				RAISERROR('Genre Name Should Not Be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+			DECLARE @msg VARCHAR(250);
+			SET @msg = @GenreName + ' : Genre Name Already Exists';
 			IF @count > 0		
 			BEGIN
-				--RAISERROR(@GenreName + ' : Genre Name Already Exists', 16, 1);
-				PRINT @GenreName + ' : Genre Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR(@GenreName + ' : Genre Name Already Exists', 16, 1);
-				PRINT @GenreName + ' : Genre Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
@@ -88,16 +82,17 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+	
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = @GenreName + ' : Genre Name Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR(@GenreName + ' : Genre Name Already Exists', 16, 1);
-			PRINT @GenreName + ' : Genre Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR(@GenreName + ' : Genre Name Already Exists', 16, 1);
-			PRINT @GenreName + ' : Genre Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -122,11 +117,6 @@ BEGIN
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateCategory Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateCategory Already exists';
 END
 GO
 
@@ -162,23 +152,23 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Category Name Should Not Be Null', 16, 1);
-				PRINT 'Category Name Should Not Be Null';
+				RAISERROR('Category Name Should Not Be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+		
+			DECLARE @msg VARCHAR(250);
+			SET @msg = @CategoryName + ' : Category Name Already Exists'
 			IF @count > 0		
 			BEGIN
-				--RAISERROR(@CategoryName + ' : Category Name Already Exists', 16, 1);
-				PRINT @CategoryName + ' : Category Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR(@CategoryName + ' : Category Name Already Exists', 16, 1);
-				PRINT @CategoryName + ' : Category Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
@@ -197,16 +187,16 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = @CategoryName + ' : Category Name Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR(@CategoryName + ' : Category Name Already Exists', 16, 1);
-			PRINT @CategoryName + ' : Category Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR(@CategoryName + ' : Category Name Already Exists', 16, 1);
-			PRINT @CategoryName + ' : Category Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -231,11 +221,6 @@ BEGIN
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateRating Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateRating Already exists';
 END
 GO
 
@@ -271,23 +256,22 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Rating Name Should Not Be Null', 16, 1);
-				PRINT 'Rating Name Should Not Be Null';
+				RAISERROR('Rating Name Should Not Be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+			DECLARE @msg VARCHAR(250);
+			SET @msg = @RatingName + ' : Rating Name Already Exists';
 			IF @count > 0		
 			BEGIN
-				--RAISERROR(@RatingName + ' : Rating Name Already Exists', 16, 1);
-				PRINT @RatingName + ' : Rating Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR(@RatingName + ' : Rating Name Already Exists', 16, 1);
-				PRINT @RatingName + ' : Rating Name Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
@@ -306,16 +290,17 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+	
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = @RatingName + ' : Rating Name Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR(@RatingName + ' : Rating Name Already Exists', 16, 1);
-			PRINT @RatingName + ' : Rating Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR(@RatingName + ' : Rating Name Already Exists', 16, 1);
-			PRINT @RatingName + ' : Rating Name Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -341,11 +326,6 @@ BEGIN
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateCustomer Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateCustomer Already exists';
 END
 GO
 
@@ -384,23 +364,22 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
+				RAISERROR('Values should not be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+			DECLARE @msg VARCHAR(250);
+			SET @msg = 'Customer with email "' + @Email + '" Already Exists';
 			IF @count > 0		
 			BEGIN
-				--RAISERROR('Customer with email "' + @Email + '" Already Exists', 16, 1);
-				PRINT 'Customer with email "' + @Email + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Customer with email "' + @Email + '" Already Exists', 16, 1);
-				PRINT 'Customer with email "' + @Email + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
@@ -419,16 +398,16 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = 'Customer with email "' + @Email + '" Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR('Customer with email "' + @Email + '" Already Exists', 16, 1);
-			PRINT 'Customer with email "' + @Email + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR('Customer with email "' + @Email + '" Already Exists', 16, 1);
-			PRINT 'Customer with email "' + @Email + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -454,11 +433,6 @@ BEGIN
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateAuditorium Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateAuditorium Already exists';
 END
 GO
 
@@ -494,23 +468,22 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
+				RAISERROR('Values should not be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+			DECLARE @msg VARCHAR(250);
+			SET @msg = 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
 			IF @count > 0		
 			BEGIN
-				--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-				PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-				PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
@@ -529,16 +502,16 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-			PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR('Auditorium Name "' + @AuditoriumName + '" Already Exists', 16, 1);
-			PRINT 'Auditorium Name "' + @AuditoriumName + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -565,11 +538,6 @@ BEGIN
 	');
 	-- ^ creates a basic procedure then gets altered
 END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateMovie Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateMovie Already exists';
-END
 GO
 
 
@@ -595,12 +563,6 @@ BEGIN
 		END
 	')
 END
-ELSE
-BEGIN
-	--RAISERROR('Function fn_MoveGenre Already exist', 16, 1);
-	PRINT 'Function fn_MoveGenre Already exists';
-END
-GO
 GO
 
 -- Alter fn_MoveGenre to what we want
@@ -689,7 +651,7 @@ BEGIN
 						ON [itb1].[GenreItem] = [g].[GenreName]
 					)
 				BEGIN
-					PRINT 'Use the appropriate Genre(s)';
+					RAISERROR('Use the appropriate Genre(s)', 16, 1);
 				END
 				ELSE
 				BEGIN
@@ -722,23 +684,23 @@ BEGIN
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
+				RAISERROR('Values should not be Null', 16, 1);
 			END
 		END
 		ELSE
 		BEGIN
+		
+			DECLARE @msg VARCHAR(250);
+			SET @msg = 'The Movie "' + @MovieTitle + '" Already Exists';
 			IF @count > 0
 			BEGIN
-				--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-				PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-				PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
+				RAISERROR(@msg, 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
@@ -757,16 +719,17 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 	BEGIN
+
+		DECLARE @msg2 VARCHAR(250);
+		SET @msg2 = 'The Movie "' + @MovieTitle + '" Already Exists';
 		IF @count > 0		
 		BEGIN
-			--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-			PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR('The Movie "' + @MovieTitle + '" Already Exists', 16, 1);
-			PRINT 'The Movie "' + @MovieTitle + '" Already Exists';
+			RAISERROR(@msg2, 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -787,11 +750,6 @@ BEGIN
 		END
 	');
 	-- ^ creates a basic procedure then gets altered
-END
-ELSE
-BEGIN
-	--RAISERROR('Stored Procedure sp_CreateShowing Already exist', 16, 1);
-	PRINT 'Stored Procedure sp_CreateShowing Already exists';
 END
 GO
 
@@ -835,13 +793,12 @@ BEGIN
 				END
 				ELSE
 				BEGIN
-					PRINT 'Cannot show movie before it is released';
+					RAISERROR('Cannot show movie before it is released', 16, 1);
 				END
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
+				RAISERROR('Values should not be Null', 16, 1);
 			END
 			/*
 			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
@@ -859,15 +816,13 @@ BEGIN
 		BEGIN
 			IF @count > 0		
 			BEGIN
-				--RAISERROR('This Showing Already Exists', 16, 1);
-				PRINT 'This Showing Already Exists';
+				RAISERROR('This Showing Already Exists', 16, 1);
 				--ROLLBACK TRANSACTION flag;
 				-- Can commit because no changes
 			END
 			ELSE
 			BEGIN
-				--RAISERROR('This Showing Already Exists', 16, 1);
-				PRINT 'This Showing Already Exists';
+				RAISERROR('This Showing Already Exists', 16, 1);
 				--ROLLBACK TRANSACTION;
 				-- Can commit because no changes
 			END
@@ -888,14 +843,12 @@ BEGIN
 	BEGIN
 		IF @count > 0		
 		BEGIN
-			--RAISERROR('This Showing Already Exists', 16, 1);
-			PRINT 'This Showing Already Exists';
+			RAISERROR('This Showing Already Exists', 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			--RAISERROR('This Showing Already Exists', 16, 1);
-			PRINT 'This Showing Already Exists';
+			RAISERROR('This Showing Already Exists', 16, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
