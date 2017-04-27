@@ -921,17 +921,6 @@ BEGIN
 			BEGIN
 				RAISERROR('Values should not be Null', 16, 1);
 			END
-			/*
-			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
-			BEGIN
-				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
-				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
-			END
-			ELSE
-			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
-			END*/
 		END
 		ELSE
 		BEGIN
