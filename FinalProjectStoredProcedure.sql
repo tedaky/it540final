@@ -782,6 +782,127 @@ BEGIN
 		BEGIN
 			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
 			BEGIN
+				DECLARE @ReleaseDate Date
+				SELECT @ReleaseDate = ReleaseDate
+				FROM Movie
+				WHERE MovieID = @MovieID
+				IF (@ReleaseDate <= @Date)
+				BEGIN
+					INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
+					VALUES (@MovieID, @AuditoriumID, @Date, @Time);
+				END
+				ELSE
+				BEGIN
+					RAISERROR('Cannot show movie before it is released', 16, 1);
+				END
+			END
+			ELSE
+			BEGIN
+				RAISERROR('Values should not be Null', 16, 1);
+			END
+			/*
+			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
+			BEGIN
+				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
+				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
+			END
+			ELSE
+			BEGIN
+				--RAISERROR('Values should not be Null', 16, 1);
+				PRINT 'Values Should Not Be Null';
+			END*/
+		END
+		ELSE
+		BEGIN
+			IF @count > 0		
+			BEGIN
+				RAISERROR('This Showing Already Exists', 16, 1);
+				--ROLLBACK TRANSACTION flag;
+				-- Can commit because no changes
+			END
+			ELSE
+			BEGIN
+				RAISERROR('This Showing Already Exists', 16, 1);
+				--ROLLBACK TRANSACTION;
+				-- Can commit because no changes
+			END
+		END
+		-- Template body end
+
+		-- Template middle start
+		IF @count = 0
+		BEGIN
+			COMMIT TRANSACTION;
+		END
+		-- Template last end
+
+	-- Template last start
+	END
+	END TRY
+	BEGIN CATCH
+	BEGIN
+		IF @count > 0		
+		BEGIN
+			RAISERROR('This Showing Already Exists', 16, 1);
+			ROLLBACK TRANSACTION flag;
+		END
+		ELSE
+		BEGIN
+			RAISERROR('This Showing Already Exists', 16, 1);
+			ROLLBACK TRANSACTION;
+		END
+	END
+	END CATCH
+	-- Template last end
+END
+GO
+
+
+
+-- Check if sp_CreateShowing procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateOrder')
+BEGIN
+	-- Procedures in blocks have to be in EXEC
+	EXEC('
+		CREATE PROCEDURE [sp_CreateOrder]
+		AS
+		BEGIN
+			SELECT * FROM [Order];
+		END
+	');
+	-- ^ creates a basic procedure then gets altered
+END
+GO
+
+-- Alter sp_CreateShowing to what we want
+ALTER PROCEDURE [sp_CreateShowing]
+	-- Param as MovieID, AuditoriumID, Date, Time
+	@MovieID INT,
+	@AuditoriumID INT,
+	@Date		Date,
+	@Time		Time
+AS
+BEGIN
+	-- Template head start
+	DECLARE @count INT;
+	SET @count = @@TRANCOUNT;
+	IF @count > 0
+	BEGIN
+		SAVE TRANSACTION flag;
+	END
+	ELSE
+	BEGIN
+		BEGIN TRANSACTION;
+	END
+	BEGIN TRY
+	BEGIN
+	-- Template head end
+
+			-- Template body start
+		IF NOT EXISTS (SELECT [MovieID], [AuditoriumID], [Time] FROM [Showing] WHERE [Date] = @Date)
+		BEGIN
+			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
+			BEGIN
 			DECLARE @ReleaseDate Date
 			SELECT @ReleaseDate = ReleaseDate
 			FROM Movie
@@ -856,4 +977,3 @@ BEGIN
 	-- Template last end
 END
 GO
-
