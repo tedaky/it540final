@@ -859,7 +859,7 @@ GO
 
 
 
--- Check if sp_CreateShowing procedure exists
+-- Check if sp_CreateOrder procedure exists
 IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateOrder')
 BEGIN
 	-- Procedures in blocks have to be in EXEC
@@ -875,12 +875,18 @@ END
 GO
 
 -- Alter sp_CreateShowing to what we want
-ALTER PROCEDURE [sp_CreateShowing]
-	-- Param as MovieID, AuditoriumID, Date, Time
-	@MovieID INT,
-	@AuditoriumID INT,
-	@Date		Date,
-	@Time		Time
+ALTER PROCEDURE [sp_CreateOrder]
+	-- Param as 
+	-- Order Table
+	@CustomerID INT,
+	@OrderDate DATE,
+
+	-- OrderDetail Table
+	@No_of_Tickets INT,
+
+	-- Ticket Table
+	@ShowingID INT,
+	@CategoryID INT
 AS
 BEGIN
 	-- Template head start
@@ -898,56 +904,53 @@ BEGIN
 	BEGIN
 	-- Template head end
 
-			-- Template body start
-		IF NOT EXISTS (SELECT [MovieID], [AuditoriumID], [Time] FROM [Showing] WHERE [Date] = @Date)
+		-- Template body start
+		DECLARE @ticketdefault MONEY;
+		SET @ticketdefault = '10.00';
+
+		INSERT INTO [Order] ([CustomerID], [OrderDate])
+		VALUES (@CustomerID, @OrderDate);
+		DECLARE @orderid int;
+		SET @orderid = @@IDENTITY;
+		
+		DECLARE @pricecalc MONEY;
+		
+		IF @CategoryID = 1
 		BEGIN
-			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
-			BEGIN
-			DECLARE @ReleaseDate Date
-			SELECT @ReleaseDate = ReleaseDate
-			FROM Movie
-			WHERE MovieID = @MovieID
-				IF (@ReleaseDate <= @Date)
-				BEGIN
-					INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
-					VALUES (@MovieID, @AuditoriumID, @Date, @Time);
-				END
-				ELSE
-				BEGIN
-					RAISERROR('Cannot show movie before it is released', 16, 1);
-				END
-			END
-			ELSE
-			BEGIN
-				RAISERROR('Values should not be Null', 16, 1);
-			END
-			/*
-			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
-			BEGIN
-				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
-				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
-			END
-			ELSE
-			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
-			END*/
+			SET @pricecalc = @ticketdefault;
 		END
-		ELSE
+		ELSE IF @CategoryID = 2
 		BEGIN
-			IF @count > 0		
-			BEGIN
-				RAISERROR('This Showing Already Exists', 16, 1);
-				--ROLLBACK TRANSACTION flag;
-				-- Can commit because no changes
-			END
-			ELSE
-			BEGIN
-				RAISERROR('This Showing Already Exists', 16, 1);
-				--ROLLBACK TRANSACTION;
-				-- Can commit because no changes
-			END
+			SET @pricecalc = @ticketdefault * 0.95;
 		END
+		ELSE IF @CategoryID = 3
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.8;
+		END
+		ELSE IF @CategoryID = 4
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.85;
+		END
+		ELSE IF @CategoryID = 5
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.95;
+		END
+		ELSE IF @CategoryID = 6
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.90;
+		END
+		
+		DECLARE @pricetotal MONEY;
+		SET @pricetotal = @pricecalc * @No_of_Tickets;
+
+		INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
+		VALUES (@ShowingID, @CategoryID, @pricetotal);
+		DECLARE @ticketid INT;
+		SET @ticketid = @@IDENTITY;
+
+		INSERT INTO [OrderDetail] ([OrderID], [TicketID], [No_of_Tickets])
+		VALUES (@orderid, @ticketid, @No_of_Tickets);
+
 		-- Template body end
 
 		-- Template middle start
