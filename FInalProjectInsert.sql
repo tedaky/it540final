@@ -115,3 +115,17 @@ EXEC [sp_CreateShowing] @MovieID = 4, @AuditoriumID = 5, @Date = '1997-08-27', @
 GO
 EXEC [sp_CreateShowing] @MovieID = 5, @AuditoriumID = 3, @Date = '2013-06-05', @Time = '7:45';
 GO
+
+
+
+-- Insert to order, orderdetail, ticket | Todays date
+EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2007-07-14', @No_of_Tickets = 3, @ShowingID = 1, @CategoryID = 3;
+GO
+EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2010-06-20', @No_of_Tickets = 1, @ShowingID = 3, @CategoryID = 2;
+GO
+EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 1;
+GO
+EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 5;
+GO
+EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 1, @ShowingID = 5, @CategoryID = 6;
+GO

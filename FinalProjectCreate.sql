@@ -1,5 +1,3 @@
--- All RAISERROR are commented and replaced with PRINT
-
 -- Start with Master
 USE [master];
 GO

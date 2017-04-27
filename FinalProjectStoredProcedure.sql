@@ -800,17 +800,6 @@ BEGIN
 			BEGIN
 				RAISERROR('Values should not be Null', 16, 1);
 			END
-			/*
-			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
-			BEGIN
-				INSERT INTO [Showing] ([MovieID], [AuditoriumID], [Date], [Time])
-				VALUES (@MovieID, @AuditoriumID, @Date, @Time);
-			END
-			ELSE
-			BEGIN
-				--RAISERROR('Values should not be Null', 16, 1);
-				PRINT 'Values Should Not Be Null';
-			END*/
 		END
 		ELSE
 		BEGIN
@@ -857,3 +846,125 @@ BEGIN
 END
 GO
 
+
+-- Check if sp_CreateOrder procedure exists
+IF NOT EXISTS (SELECT [name] FROM [Cinema].[sys].[procedures] WHERE [name] = 'sp_CreateOrder')
+BEGIN
+	-- Procedures in blocks have to be in EXEC
+	EXEC('
+		CREATE PROCEDURE [sp_CreateOrder]
+		AS
+		BEGIN
+			SELECT * FROM [Order];
+		END
+	');
+	-- ^ creates a basic procedure then gets altered
+END
+GO
+
+-- Alter sp_CreateShowing to what we want
+ALTER PROCEDURE [sp_CreateOrder]
+	-- Param as 
+	-- Order Table
+	@CustomerID INT,
+	@OrderDate DATE,
+
+	-- OrderDetail Table
+	@No_of_Tickets INT,
+
+	-- Ticket Table
+	@ShowingID INT,
+	@CategoryID INT
+AS
+BEGIN
+	-- Template head start
+	DECLARE @count INT;
+	SET @count = @@TRANCOUNT;
+	IF @count > 0
+	BEGIN
+		SAVE TRANSACTION flag;
+	END
+	ELSE
+	BEGIN
+		BEGIN TRANSACTION;
+	END
+	BEGIN TRY
+	BEGIN
+	-- Template head end
+
+		-- Template body start
+		DECLARE @ticketdefault MONEY;
+		SET @ticketdefault = '10.00';
+
+		INSERT INTO [Order] ([CustomerID], [OrderDate])
+		VALUES (@CustomerID, @OrderDate);
+		DECLARE @orderid int;
+		SET @orderid = @@IDENTITY;
+		
+		DECLARE @pricecalc MONEY;
+		
+		IF @CategoryID = '1'
+		BEGIN
+			SET @pricecalc = @ticketdefault;
+		END
+		ELSE IF @CategoryID = '2'
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.95;
+		END
+		ELSE IF @CategoryID = '3'
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.8;
+		END
+		ELSE IF @CategoryID = '4'
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.85;
+		END
+		ELSE IF @CategoryID = '5'
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.95;
+		END
+		ELSE IF @CategoryID = '6'
+		BEGIN
+			SET @pricecalc = @ticketdefault * 0.90;
+		END
+		
+		DECLARE @pricetotal MONEY;
+		SET @pricetotal = @pricecalc * @No_of_Tickets;
+
+		INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
+		VALUES (@ShowingID, @CategoryID, @pricetotal);
+		DECLARE @ticketid INT;
+		SET @ticketid = @@IDENTITY;
+
+		INSERT INTO [OrderDetail] ([OrderID], [TicketID], [No_of_Tickets])
+		VALUES (@orderid, @ticketid, @No_of_Tickets);
+
+		-- Template body end
+
+		-- Template middle start
+		IF @count = 0
+		BEGIN
+			COMMIT TRANSACTION;
+		END
+		-- Template last end
+
+	-- Template last start
+	END
+	END TRY
+	BEGIN CATCH
+	BEGIN
+		IF @count > 0		
+		BEGIN
+			RAISERROR('This Showing Already Exists', 16, 1);
+			ROLLBACK TRANSACTION flag;
+		END
+		ELSE
+		BEGIN
+			RAISERROR('This Showing Already Exists', 16, 1);
+			ROLLBACK TRANSACTION;
+		END
+	END
+	END CATCH
+	-- Template last end
+END
+GO
