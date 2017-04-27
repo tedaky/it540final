@@ -968,3 +968,30 @@ BEGIN
 	-- Template last end
 END
 GO
+
+
+CREATE TRIGGER Cust13
+ON [Order]
+INSTEAD OF Insert
+AS
+BEGIN
+	DECLARE @rowaffected int;
+	SET @rowaffected = @@ROWCOUNT
+
+	IF @rowaffected > 0
+	BEGIN
+		IF EXISTS (
+			SELECT i.CustomerID
+			FROM inserted i
+			where 13 <= (
+				SELECT DATEDIFF(year, c.DOB, GETDATE())
+				FROM Customer c
+				WHERE c.CustomerID = i.CustomerID
+			)
+		)
+		BEGIN
+			insert into [Order]
+			select [CustomerID], [OrderDate] from [inserted];
+		END;
+	END;
+END
