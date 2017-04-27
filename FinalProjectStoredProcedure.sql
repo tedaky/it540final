@@ -904,27 +904,27 @@ BEGIN
 		
 		DECLARE @pricecalc MONEY;
 		
-		IF @CategoryID = 1
+		IF @CategoryID = '1'
 		BEGIN
 			SET @pricecalc = @ticketdefault;
 		END
-		ELSE IF @CategoryID = 2
+		ELSE IF @CategoryID = '2'
 		BEGIN
 			SET @pricecalc = @ticketdefault * 0.95;
 		END
-		ELSE IF @CategoryID = 3
+		ELSE IF @CategoryID = '3'
 		BEGIN
 			SET @pricecalc = @ticketdefault * 0.8;
 		END
-		ELSE IF @CategoryID = 4
+		ELSE IF @CategoryID = '4'
 		BEGIN
 			SET @pricecalc = @ticketdefault * 0.85;
 		END
-		ELSE IF @CategoryID = 5
+		ELSE IF @CategoryID = '5'
 		BEGIN
 			SET @pricecalc = @ticketdefault * 0.95;
 		END
-		ELSE IF @CategoryID = 6
+		ELSE IF @CategoryID = '6'
 		BEGIN
 			SET @pricecalc = @ticketdefault * 0.90;
 		END
