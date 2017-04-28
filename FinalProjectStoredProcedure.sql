@@ -1034,7 +1034,21 @@ END
 GO
 
 
-CREATE TRIGGER Cust13
+IF NOT EXISTS (select [name] from [Cinema].[sys].[objects] where type = 'TR' and [name] = 'Cust13')
+BEGIN
+	EXEC('
+		CREATE TRIGGER Cust13
+		ON [Order]
+		INSTEAD OF Insert
+		AS
+		BEGIN
+			SELECT * FROM [Order]
+		END
+	')
+END
+GO
+
+ALTER TRIGGER Cust13
 ON [Order]
 INSTEAD OF Insert
 AS
