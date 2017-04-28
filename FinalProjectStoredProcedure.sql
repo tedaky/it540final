@@ -1101,13 +1101,13 @@ BEGIN
 		END;
 	END;
 END
+GO
 
 
-
-IF NOT EXISTS (select [name] from [Cinema].[sys].[objects] where type = 'TR' and [name] = 'tr_ShowingUpdate')
+IF NOT EXISTS (select [name] from [Cinema].[sys].[objects] where type = 'TR' and [name] = 'trig_ShowingUpdate')
 BEGIN
 	EXEC('
-		CREATE TRIGGER tr_ShowingUpdate
+		CREATE TRIGGER [trig_ShowingUpdate]
 		ON [Showing]
 		INSTEAD OF Update
 		AS
@@ -1118,7 +1118,7 @@ BEGIN
 END
 GO
 
-ALTER TRIGGER tr_ShowingUpdate
+ALTER TRIGGER [trig_ShowingUpdate]
 ON [Showing]
 INSTEAD OF Update
 AS
