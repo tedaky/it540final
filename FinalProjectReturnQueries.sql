@@ -3,13 +3,16 @@ USE [Cinema];
 -- i.   Return movies that haven't sold tickets
 SELECT [m].[MovieID], [m].[Title]
 FROM [Movie] [m]
-WHERE NOT EXISTS (
-	SELECT *
-	FROM [Showing] [s]
+WHERE [m].[MovieID] NOT IN (
+	SELECT [m].[MovieID]
+	FROM [Movie] [m]
+	JOIN [Showing] [s]
+	ON [m].[MovieID] = [s].MovieID
 	JOIN [Ticket] [t]
 	ON [t].[ShowingID] = [s].[ShowingID]
 	JOIN [OrderDetail] [od]
 	ON [t].[TicketID] = [od].[TicketID]
+	GROUP BY [m].[MovieID]
 );
 GO
 
@@ -28,17 +31,21 @@ GROUP BY [m].[MovieID], [m].[Title], YEAR([o].[OrderDate]);
 GO
 
 -- iii.	Return the number of available seats for each movie per showing date.
-SELECT [m].[MovieID], [m].[Title], [a].[Available_Seats], [s].[Date]
+SELECT [m].[MovieID], [m].[Title], [s].[Date], [a].[Available_Seats] - SUM([od].[No_of_Tickets]) AS 'Seats Available'
 from [Showing] [s]
 JOIN [Movie] [m]
 ON [s].[MovieID] = [m].[MovieID]
 JOIN [Auditorium] [a]
 ON [s].[AuditoriumID] = [a].[AuditoriumID]
-GROUP BY [s].[Date], [m].[MovieID], [m].[Title], [a].[Available_Seats]
+JOIN [Ticket] [t]
+ON [t].[ShowingID] = [s].[ShowingID]
+JOIN [OrderDetail] [od]
+ON [od].[TicketID] = [t].[TicketID]
+GROUP BY [s].[ShowingID], [s].[Date], [m].[MovieID], [m].[Title], [a].[Available_Seats]
 GO
 
 -- iv.	Return the number of tickets sold per year per category.
-SELECT SUM([od].[no_of_tickets]), YEAR([o].[OrderDate]), [c].[Name]
+SELECT SUM([od].[no_of_tickets]) AS 'Tickets Sold', YEAR([o].[OrderDate]) AS 'Year', [c].[Name]
 FROM [OrderDetail] [od]
 JOIN [Order] [o]
 ON [od].[OrderID] = [o].[OrderID]
@@ -50,19 +57,18 @@ GROUP BY YEAR([o].[OrderDate]), [c].[Name]
 GO
 
 -- v.   Return all the movies that have had sold out showings.
-SELECT [m].[MovieID], [m].[Title]
-FROM [Movie] [m]
-WHERE EXISTS (
-	SELECT [a].[Available_Seats]
-	FROM [Auditorium] [a]
-	JOIN [Showing] [s]
-	ON [s].[AuditoriumID] = [a].[AuditoriumID]
-	JOIN [Ticket] [t]
-	ON [t].[ShowingID] = [s].[ShowingID]
-	JOIN [OrderDetail] [od]
-	ON [od].[TicketID] = [t].TicketID
-	WHERE [od].[No_of_Tickets] = [a].[Available_Seats]
-);
+SELECT [m].[MovieID], [m].[Title], [s].[ShowingID], [a].[Available_Seats], SUM([od].[No_of_Tickets]) AS 'Total Tickets Sold'
+FROM [Auditorium] [a]
+JOIN [Showing] [s]
+ON [s].[AuditoriumID] = [a].[AuditoriumID]
+JOIN [Ticket] [t]
+ON [t].[ShowingID] = [s].[ShowingID]
+JOIN [OrderDetail] [od]
+ON [od].[TicketID] = [t].[TicketID]
+JOIN [Movie] [m]
+ON [m].[MovieID] = [s].[MovieID]
+GROUP BY [m].[MovieID], [m].[Title], [a].[Available_Seats], [s].[ShowingID]
+HAVING SUM([od].[No_of_Tickets]) = [a].[Available_Seats]
 GO
 
 -- vi.  Return per category the number of moviegoers.

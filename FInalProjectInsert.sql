@@ -141,9 +141,13 @@ EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2014-09-25', @No_of_Tickets
 GO
 EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2015-09-25', @No_of_Tickets = 4, @ShowingID = 6, @CategoryID = 1;
 GO
+EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2015-09-25', @No_of_Tickets = 1, @ShowingID = 6, @CategoryID = 1;
+GO
 EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2016-09-25', @No_of_Tickets = 4, @ShowingID = 1, @CategoryID = 1;
 GO
 EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2016-09-25', @No_of_Tickets = 2, @ShowingID = 1, @CategoryID = 1;
+GO
+EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 1, @ShowingID = 1, @CategoryID = 6;
 GO
 
 -- showing update check for F.
