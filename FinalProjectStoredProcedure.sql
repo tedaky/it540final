@@ -778,7 +778,7 @@ BEGIN
 	-- Template head end
 
 			-- Template body start
-		IF NOT EXISTS (SELECT [MovieID], [AuditoriumID], [Time] FROM [Showing] WHERE [Date] = @Date)
+		IF NOT EXISTS (SELECT [MovieID], [AuditoriumID] FROM [Showing] WHERE [Date] = @Date AND [Time] = @Time)
 		BEGIN
 			IF @MovieID IS NOT NULL AND @AuditoriumID IS NOT NULL AND @Date IS NOT NULL AND @Time IS NOT NULL
 			BEGIN
@@ -901,6 +901,29 @@ BEGIN
 		DECLARE @pricetotal MONEY;
 		DECLARE @ticketid INT;
 
+		if ( (@No_of_Tickets +
+				(SELECT SUM(od.No_of_Tickets) AS 'Ticket_Sum'
+				FROM Auditorium a
+				JOIN Showing s
+				ON a.AuditoriumID = s.AuditoriumID
+				JOIN Ticket t
+				ON t.ShowingID = s.ShowingID
+				JOIN OrderDetail od
+				on od.TicketID = t.TicketID
+				WHERE @ShowingID = s.ShowingID
+				GROUP BY a.AuditoriumID)
+			) > (
+				SELECT a.Available_Seats
+				FROM Auditorium a
+				JOIN Showing s
+				ON s.AuditoriumID = a.AuditoriumID
+				WHERE @ShowingID = s.ShowingID
+			)
+		)
+		BEGIN
+			RAISERROR('Movie is sold out', 20, 1);
+		END
+
 		IF EXISTS (
 			SELECT [r].[RatingID], [s].[ShowingID]
 			FROM [Rating] [r]
@@ -1003,6 +1026,7 @@ BEGIN
 			VALUES (@orderid, @ticketid, @No_of_Tickets);
 
 		END
+
 		-- Template body end
 
 		-- Template middle start
@@ -1019,12 +1043,12 @@ BEGIN
 	BEGIN
 		IF @count > 0		
 		BEGIN
-			RAISERROR('Customer doesn''t meet age criteria', 16, 1);
+			RAISERROR('An error occurred. DOH', 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			RAISERROR('Customer doesn''t meet age criteria', 14, 1);
+			RAISERROR('An error occurred. DOH', 14, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -1077,3 +1101,55 @@ BEGIN
 		END;
 	END;
 END
+
+
+
+IF NOT EXISTS (select [name] from [Cinema].[sys].[objects] where type = 'TR' and [name] = 'tr_ShowingUpdate')
+BEGIN
+	EXEC('
+		CREATE TRIGGER tr_ShowingUpdate
+		ON [Showing]
+		INSTEAD OF Update
+		AS
+		BEGIN
+			SELECT * FROM [Showing]
+		END
+	')
+END
+GO
+
+ALTER TRIGGER tr_ShowingUpdate
+ON [Showing]
+INSTEAD OF Update
+AS
+BEGIN
+	DECLARE @rowaffected int;
+	SET @rowaffected = @@ROWCOUNT
+
+	IF @rowaffected > 0
+	BEGIN
+
+		IF NOT EXISTS (
+			SELECT t.ShowingID
+			FROM inserted i
+			join Ticket t
+			ON i.ShowingID = t.ShowingID
+		)
+		BEGIN
+			UPDATE [Showing]
+			SET [MovieID] = [inserted].[MovieID],
+			[AuditoriumID] = [inserted].[AuditoriumID],
+			[Date] = [inserted].[Date],
+			[Time] = [inserted].[Time]
+			FROM [inserted]
+			WHERE [Showing].[ShowingID] = [inserted].[ShowingID]
+		END
+		ELSE
+		BEGIN
+			RAISERROR('Cannot update showing if a ticket has been sold', 16, 1);
+		END;
+	END;
+END
+
+
+

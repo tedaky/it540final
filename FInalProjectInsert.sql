@@ -89,6 +89,8 @@ EXEC [sp_CreateAuditorium] @AuditoriumName = 'Auditorium D', @AvailableSeats = 2
 GO
 EXEC [sp_CreateAuditorium] @AuditoriumName = 'Auditorium E', @AvailableSeats = 250;
 GO
+EXEC [sp_CreateAuditorium] @AuditoriumName = 'Auditorium F', @AvailableSeats = 5;
+GO
 
 
 -- Insert to Movie Table
@@ -115,6 +117,8 @@ EXEC [sp_CreateShowing] @MovieID = 4, @AuditoriumID = 5, @Date = '1997-08-27', @
 GO
 EXEC [sp_CreateShowing] @MovieID = 5, @AuditoriumID = 3, @Date = '2013-06-05', @Time = '7:45';
 GO
+EXEC [sp_CreateShowing] @MovieID = 2, @AuditoriumID = 6, @Date = '2013-06-05', @Time = '8:45';
+GO
 
 
 
@@ -135,4 +139,10 @@ EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets
 GO
 EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2014-09-25', @No_of_Tickets = 1, @ShowingID = 2, @CategoryID = 1;
 GO
+EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2015-09-25', @No_of_Tickets = 4, @ShowingID = 6, @CategoryID = 1;
+GO
 
+-- showing update check for F.
+UPDATE [Showing]
+SET [Date] = '2014-06-05'
+WHERE ShowingID = 6
