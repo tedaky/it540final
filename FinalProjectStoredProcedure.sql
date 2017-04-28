@@ -891,54 +891,118 @@ BEGIN
 	BEGIN TRY
 	BEGIN
 	-- Template head end
-
+	 
 		-- Template body start
 		DECLARE @ticketdefault MONEY;
 		SET @ticketdefault = '10.00';
 
-		INSERT INTO [Order] ([CustomerID], [OrderDate])
-		VALUES (@CustomerID, @OrderDate);
 		DECLARE @orderid int;
-		SET @orderid = @@IDENTITY;
-		
 		DECLARE @pricecalc MONEY;
-		
-		IF @CategoryID = '1'
-		BEGIN
-			SET @pricecalc = @ticketdefault;
-		END
-		ELSE IF @CategoryID = '2'
-		BEGIN
-			SET @pricecalc = @ticketdefault * 0.95;
-		END
-		ELSE IF @CategoryID = '3'
-		BEGIN
-			SET @pricecalc = @ticketdefault * 0.8;
-		END
-		ELSE IF @CategoryID = '4'
-		BEGIN
-			SET @pricecalc = @ticketdefault * 0.85;
-		END
-		ELSE IF @CategoryID = '5'
-		BEGIN
-			SET @pricecalc = @ticketdefault * 0.95;
-		END
-		ELSE IF @CategoryID = '6'
-		BEGIN
-			SET @pricecalc = @ticketdefault * 0.90;
-		END
-		
 		DECLARE @pricetotal MONEY;
-		SET @pricetotal = @pricecalc * @No_of_Tickets;
-
-		INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
-		VALUES (@ShowingID, @CategoryID, @pricetotal);
 		DECLARE @ticketid INT;
-		SET @ticketid = @@IDENTITY;
 
-		INSERT INTO [OrderDetail] ([OrderID], [TicketID], [No_of_Tickets])
-		VALUES (@orderid, @ticketid, @No_of_Tickets);
+		IF EXISTS (
+			SELECT [r].[RatingID]
+			FROM [Rating] [r]
+			JOIN [Movie] [m]
+			ON [m].[RatingID] = [r].[RatingID]
+			JOIN [Showing] [s]
+			ON [s].[MovieID] = [m].[MovieID]
+			WHERE [r].[RatingID] = 5 AND
+				[s].[ShowingID] = @ShowingID
+		)
+		BEGIN
+			IF (
+				17 <= (SELECT DATEDIFF(year, [c].[DOB], GETDATE())
+				FROM [Customer] [c]
+				WHERE [c].[CustomerID] = @CustomerID)
+			)
+			BEGIN
 
+				INSERT INTO [Order] ([CustomerID], [OrderDate])
+				VALUES (@CustomerID, @OrderDate);
+				SET @orderid = @@IDENTITY;
+		
+				IF @CategoryID = '1'
+				BEGIN
+					SET @pricecalc = @ticketdefault;
+				END
+				ELSE IF @CategoryID = '2'
+				BEGIN
+					SET @pricecalc = @ticketdefault * 0.95;
+				END
+				ELSE IF @CategoryID = '3'
+				BEGIN
+					SET @pricecalc = @ticketdefault * 0.8;
+				END
+				ELSE IF @CategoryID = '4'
+				BEGIN
+					SET @pricecalc = @ticketdefault * 0.85;
+				END
+				ELSE IF @CategoryID = '5'
+				BEGIN
+					SET @pricecalc = @ticketdefault * 0.95;
+				END
+				ELSE IF @CategoryID = '6'
+				BEGIN
+					SET @pricecalc = @ticketdefault * 0.90;
+				END
+		
+				SET @pricetotal = @pricecalc * @No_of_Tickets;
+
+				INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
+				VALUES (@ShowingID, @CategoryID, @pricetotal);
+				SET @ticketid = @@IDENTITY;
+
+				INSERT INTO [OrderDetail] ([OrderID], [TicketID], [No_of_Tickets])
+				VALUES (@orderid, @ticketid, @No_of_Tickets);
+			END
+			ELSE
+			BEGIN
+				RAISERROR('A minor cannot purchase a rated R movie', 20, 1);
+			END
+		END
+		ELSE
+		BEGIN
+			INSERT INTO [Order] ([CustomerID], [OrderDate])
+			VALUES (@CustomerID, @OrderDate);
+			SET @orderid = @@IDENTITY;
+		
+			IF @CategoryID = '1'
+			BEGIN
+				SET @pricecalc = @ticketdefault;
+			END
+			ELSE IF @CategoryID = '2'
+			BEGIN
+				SET @pricecalc = @ticketdefault * 0.95;
+			END
+			ELSE IF @CategoryID = '3'
+			BEGIN
+				SET @pricecalc = @ticketdefault * 0.8;
+			END
+			ELSE IF @CategoryID = '4'
+			BEGIN
+				SET @pricecalc = @ticketdefault * 0.85;
+			END
+			ELSE IF @CategoryID = '5'
+			BEGIN
+				SET @pricecalc = @ticketdefault * 0.95;
+			END
+			ELSE IF @CategoryID = '6'
+			BEGIN
+				SET @pricecalc = @ticketdefault * 0.90;
+			END
+		
+			SET @pricetotal = @pricecalc * @No_of_Tickets;
+
+			INSERT INTO [Ticket] ([ShowingID], [CategoryID], [Price])
+			VALUES (@ShowingID, @CategoryID, @pricetotal);
+			SET @ticketid = @@IDENTITY;
+
+			INSERT INTO [OrderDetail] ([OrderID], [TicketID], [No_of_Tickets])
+			VALUES (@orderid, @ticketid, @No_of_Tickets);
+
+		END
 		-- Template body end
 
 		-- Template middle start
@@ -955,12 +1019,12 @@ BEGIN
 	BEGIN
 		IF @count > 0		
 		BEGIN
-			RAISERROR('This Showing Already Exists', 16, 1);
+			RAISERROR('A minor cannot purchase a rated R movie', 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			RAISERROR('This Showing Already Exists', 16, 1);
+			RAISERROR('A minor cannot purchase a rated R movie', 14, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
@@ -992,6 +1056,10 @@ BEGIN
 		BEGIN
 			insert into [Order]
 			select [CustomerID], [OrderDate] from [inserted];
+		END
+		ELSE
+		BEGIN
+			RAISERROR('Have to be older than 13 years of age to purchase a ticket', 16, 1);
 		END;
 	END;
 END

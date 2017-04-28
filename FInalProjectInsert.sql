@@ -66,11 +66,11 @@ GO
 
 
 -- Insert to Customer Table
-EXEC [sp_CreateCustomer] @FirstName = 'Bradley', @LastName = 'Kunz', @Gender = 'M', @DOB = '2005-9-18', @Email = 'bradley.kunz@mnsu.edu';
+EXEC [sp_CreateCustomer] @FirstName = 'Bradley', @LastName = 'Kunz', @Gender = 'M', @DOB = '1999-9-18', @Email = 'bradley.kunz@mnsu.edu';
 GO
 EXEC [sp_CreateCustomer] @FirstName = 'Eric', @LastName = 'Tiedeken', @Gender = 'M', @DOB = '2010-12-25', @Email = 'eric.tiedeken@mnsu.edu';
 GO
-EXEC [sp_CreateCustomer] @FirstName = 'Emiel', @LastName = 'Smeek', @Gender = 'M', @DOB = '2008-12-6', @Email = 'emiel.smeek@mnsu.edu';
+EXEC [sp_CreateCustomer] @FirstName = 'Emiel', @LastName = 'Smeek', @Gender = 'M', @DOB = '2003-12-6', @Email = 'emiel.smeek@mnsu.edu';
 GO
 EXEC [sp_CreateCustomer] @FirstName = 'Jane', @LastName = 'Doe', @Gender = 'F', @DOB = '1970-4-20', @Email = 'jane.doe@mnsu.edu';
 GO
@@ -123,9 +123,14 @@ EXEC [sp_CreateOrder] @CustomerID = 1, @OrderDate = '2007-07-14', @No_of_Tickets
 GO
 EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2010-06-20', @No_of_Tickets = 1, @ShowingID = 3, @CategoryID = 2;
 GO
+EXEC [sp_CreateOrder] @CustomerID = 3, @OrderDate = '2010-06-20', @No_of_Tickets = 1, @ShowingID = 3, @CategoryID = 2;
+GO
 EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 1;
 GO
 EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 5;
 GO
 EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 1, @ShowingID = 5, @CategoryID = 6;
 GO
+EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2014-09-25', @No_of_Tickets = 1, @ShowingID = 2, @CategoryID = 1;
+GO
+
