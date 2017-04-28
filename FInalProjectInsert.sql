@@ -125,6 +125,8 @@ EXEC [sp_CreateOrder] @CustomerID = 2, @OrderDate = '2010-06-20', @No_of_Tickets
 GO
 EXEC [sp_CreateOrder] @CustomerID = 3, @OrderDate = '2010-06-20', @No_of_Tickets = 1, @ShowingID = 3, @CategoryID = 2;
 GO
+EXEC [sp_CreateOrder] @CustomerID = 3, @OrderDate = '2010-06-20', @No_of_Tickets = 1, @ShowingID = 2, @CategoryID = 2;
+GO
 EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 1;
 GO
 EXEC [sp_CreateOrder] @CustomerID = 4, @OrderDate = '2010-09-25', @No_of_Tickets = 2, @ShowingID = 5, @CategoryID = 5;

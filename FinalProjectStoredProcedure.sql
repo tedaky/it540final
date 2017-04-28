@@ -902,7 +902,7 @@ BEGIN
 		DECLARE @ticketid INT;
 
 		IF EXISTS (
-			SELECT [r].[RatingID]
+			SELECT [r].[RatingID], [s].[ShowingID]
 			FROM [Rating] [r]
 			JOIN [Movie] [m]
 			ON [m].[RatingID] = [r].[RatingID]
@@ -1019,12 +1019,12 @@ BEGIN
 	BEGIN
 		IF @count > 0		
 		BEGIN
-			RAISERROR('A minor cannot purchase a rated R movie', 16, 1);
+			RAISERROR('Customer doesn''t meet age criteria', 16, 1);
 			ROLLBACK TRANSACTION flag;
 		END
 		ELSE
 		BEGIN
-			RAISERROR('A minor cannot purchase a rated R movie', 14, 1);
+			RAISERROR('Customer doesn''t meet age criteria', 14, 1);
 			ROLLBACK TRANSACTION;
 		END
 	END
